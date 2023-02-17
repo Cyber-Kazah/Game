@@ -20,6 +20,7 @@ struct Barrier
   int y;
   int w;
   int h;
+  bool visible;
 
   void draw()
   {
@@ -57,19 +58,20 @@ int main()
     Stalkers stalker = {500, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
     int y0Stalker = 1500;
    //бандит
-    HDC  Bandit = txLoadImage ("Pic/Bandit.bmp");
+    HDC  Crow = txLoadImage ("Pic/Crow.bmp");
 
-    int xBandit = 100;
-    int yBandit = 100;
-    int vxBandit = 50;
+    int xCrow = 260;
+    int yCrow = 0;
+    int vxCrow = 50;
 
     //пуля
     Bullet  bul = {0, 0, false, 10, 0};
      //барьер
-     Barrier bar = [3];
-     bar[1] = {250, 590, 260, 320};
-     bar[2] = {350, 590, 260, 320};
-     bar[3] = {450, 590, 260, 320};
+     Barrier bar[3];
+     bar[0] = {150, 590, 260, 320, true};
+     bar[1] = {250, 590, 260, 320, true};
+     bar[2] = {350, 590, 260, 320, true};
+     bar[3] = {450, 590, 260, 320, true};
 
 
      int x1 = 250;
@@ -82,7 +84,10 @@ int main()
 
     while (!GetAsyncKeyState (VK_ESCAPE))
     {
-      bar.draw();
+      bar[0].draw();
+      bar[1].draw();
+      bar[2].draw();
+      bar[3].draw();
 
           txBegin();
           txBitBlt (txDC(), 0, 0, 1920, 946, background);
@@ -115,6 +120,8 @@ int main()
              stalker.x -= 20;
              stalker.image = stalker.image_left;
            }
+
+           //пуля
           if (bul.visible)
           {
            txCircle(bul.x, bul.y, 5);
@@ -140,11 +147,11 @@ int main()
           }
 
  //движение бандита
-           txTransparentBlt (txDC(), xBandit, yBandit, 150, 300, Bandit, 0, 0, TX_WHITE);
-           xBandit = xBandit + vxBandit;
-           if(xBandit > 800 - 100 || xBandit < 0)
+           txTransparentBlt (txDC(), xCrow, yCrow, 260, 280, Crow, 0, 0, TX_WHITE);
+           xCrow = xCrow + vxCrow;
+           if(xCrow > 2000 - 1 || xCrow < 0)
            {
-              vxBandit = - vxBandit;
+              vxCrow = - vxCrow;
 
            }
 
@@ -152,11 +159,7 @@ int main()
 
 
           //препядствие
-          txRectangle(bar.x, bar.y, bar.x+bar.w, bar.y=bar.h);
-          if (stalker.x     < bar.x+bar.w &&
-              stalker.x+150 > bar.x &&
-              stalker.y     < bar.y+bar.h &&
-              stalker.y     > bar.y)
+
           {
           if(stalker.image == stalker.image_left);
           {
@@ -180,7 +183,7 @@ int main()
 
      txDeleteDC (background);
      txDeleteDC (stalker.image);
-     txDeleteDC (Bandit);
+     txDeleteDC (Crow);
 
     txTextCursor (false);
     return 0;
