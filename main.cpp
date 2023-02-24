@@ -21,10 +21,11 @@ struct Barrier
   int w;
   int h;
   bool visible;
+  HDC image;
 
   void draw()
   {
-    txRectangle(x, y, x+w, y+h);
+    txBitBlt (txDC(), x, y, w, h, image);
   }
 
 
@@ -55,7 +56,7 @@ int main()
    //фон
     HDC  background = txLoadImage ("Pic/Derevna.bmp");
     //сталкер
-    Stalkers stalker = {500, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
+    Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
     int y0Stalker = 1500;
    //бандит
     HDC  Crow = txLoadImage ("Pic/Crow.bmp");
@@ -67,30 +68,27 @@ int main()
     //пуля
     Bullet  bul = {0, 0, false, 10, 0};
      //барьер
-     Barrier bar[3];
-     bar[0] = {150, 590, 260, 320, true};
-     bar[1] = {250, 590, 260, 320, true};
-     bar[2] = {350, 590, 260, 320, true};
-     bar[3] = {450, 590, 260, 320, true};
+     Barrier bar[1];
+     bar[0] = {1200, 500, 600, 430, true, txLoadImage ("Pic/DOM.bmp")};
 
 
-     int x1 = 250;
-     int x2 = 510;
-     int y1 = 590;
-     int y2 = 910;
+     int x1 = 0;
+     int x2 = 640;
+     int y1 = 0;
+     int y2 = 930;
 
 
 
 
     while (!GetAsyncKeyState (VK_ESCAPE))
     {
-      bar[0].draw();
-      bar[1].draw();
-      bar[2].draw();
-      bar[3].draw();
+
 
           txBegin();
           txBitBlt (txDC(), 0, 0, 1920, 946, background);
+
+          bar[0].draw();
+
           txTransparentBlt (txDC(), stalker.x, stalker.y, 499, 600, stalker.image, 0, 0, TX_WHITE);
 //земля
           stalker.y += 10;
