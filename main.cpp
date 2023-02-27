@@ -12,6 +12,11 @@ struct Stalkers
    HDC image_sit;
    int vx;
    int vy;
+
+   void draw()
+   {
+   txTransparentBlt (txDC(), x, y, 499, 600, image, 0, 0, TX_WHITE);
+   }
 };
 
 struct Barrier
@@ -25,7 +30,7 @@ struct Barrier
 
   void draw()
   {
-    txBitBlt (txDC(), x, y, w, h, image);
+    txTransparentBlt (txDC(), x, y, 600, 430, image, 0, 0, TX_WHITE);
   }
 
 
@@ -67,18 +72,15 @@ int main()
 
     //пуля
     Bullet  bul = {0, 0, false, 10, 0};
-     //барьер
+     //Хата
      Barrier bar[1];
-     bar[0] = {1200, 500, 600, 430, true, txLoadImage ("Pic/DOM.bmp")};
-
-
-     int x1 = 0;
-     int x2 = 640;
-     int y1 = 0;
-     int y2 = 930;
+     bar[0] = {1020, 230, 600, 430, true, txLoadImage ("Pic/DOM.bmp")};
 
 
 
+
+//1020, 230
+//1880, 940
 
     while (!GetAsyncKeyState (VK_ESCAPE))
     {
@@ -89,7 +91,8 @@ int main()
 
           bar[0].draw();
 
-          txTransparentBlt (txDC(), stalker.x, stalker.y, 499, 600, stalker.image, 0, 0, TX_WHITE);
+          stalker.draw();
+
 //земля
           stalker.y += 10;
           if(stalker.y > y0Stalker - 1200)
@@ -99,7 +102,7 @@ int main()
 
           }
 //управление
-          if(GetAsyncKeyState (VK_SPACE))
+          if(GetAsyncKeyState (VK_SPACE))//прыжок
           {
             stalker.y -= 25;
           }
@@ -144,7 +147,7 @@ int main()
 
           }
 
- //движение бандита
+ //движение вороны
            txTransparentBlt (txDC(), xCrow, yCrow, 260, 280, Crow, 0, 0, TX_WHITE);
            xCrow = xCrow + vxCrow;
            if(xCrow > 2000 - 1 || xCrow < 0)
@@ -154,22 +157,9 @@ int main()
            }
 
 
-
-
           //препядствие
 
-          {
-          if(stalker.image == stalker.image_left);
-          {
-            stalker.x = x2;
-           }
 
-           if(stalker.image == stalker.image_right);
-           {
-            stalker.x = stalker.x-150;
-          }
-
-          }
             txEnd();
             txSleep(2);
 
@@ -182,6 +172,7 @@ int main()
      txDeleteDC (background);
      txDeleteDC (stalker.image);
      txDeleteDC (Crow);
+     txDeleteDC (bar[0].image);
 
     txTextCursor (false);
     return 0;
