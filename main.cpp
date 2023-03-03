@@ -30,9 +30,9 @@ struct Barrier
 
   void draw()
   {
-    txTransparentBlt (txDC(), x, y, 600, 430, image, 0, 0, TX_WHITE);
+    txTransparentBlt (txDC(), x, y, 1200, 630, image, 0, 0, TX_WHITE);// рисование Хаты
   }
-
+   //
 
 };
 
@@ -74,7 +74,7 @@ int main()
     Bullet  bul = {0, 0, false, 10, 0};
      //Хата
      Barrier bar[1];
-     bar[0] = {1020, 230, 600, 430, true, txLoadImage ("Pic/DOM.bmp")};
+     bar[0] = {1265, 25, 1200, 930, true, txLoadImage ("Pic/DOM3.bmp")};//МЕСТО НА КАРТЕ
 
 
 
@@ -88,7 +88,7 @@ int main()
 
           txBegin();
           txBitBlt (txDC(), 0, 0, 1920, 946, background);
-
+          //рисование
           bar[0].draw();
 
           stalker.draw();
@@ -157,7 +157,7 @@ int main()
            }
 
 
-          //препядствие
+
 
 
             txEnd();
