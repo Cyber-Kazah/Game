@@ -30,7 +30,7 @@ struct Barrier
 
   void draw()
   {
-    txTransparentBlt (txDC(), x, y, 1200, 630, image, 0, 0, TX_WHITE);// рисование Хаты
+    txTransparentBlt (txDC(), x, y, 800, 820, image, 0, 0, TX_WHITE);// рисование Хаты
   }
    //
 
@@ -53,47 +53,63 @@ struct Barrier
    }
  };
 
+ struct Crow
+ {
+  int x;
+  int y;
+  int vx;
+  HDC image;
+
+  void draw()
+   {
+   txTransparentBlt (txDC(), x, y, 260, 280, image, 0, 0, TX_WHITE);
+   x = x + vx;
+    if(x > 2000 - 1 || x < 0)
+        {
+         vx = - vx;
+        }
+   }
+ };
 
 
+
+//ЗАКУЛИСЬЕ
 int main()
     {
+    {//МУЗЫКА
+    if(true)
+    txPlaySound ("Muz/Dirge for the planet.wav", SND_LOOP);
+    }
     txCreateWindow (1920, 946);
-   //фон
-    HDC  background = txLoadImage ("Pic/Derevna.bmp");
+    //фон
+        HDC  background = txLoadImage ("Pic/Derevna.bmp");
     //сталкер
-    Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
-    int y0Stalker = 1500;
-   //бандит
-    HDC  Crow = txLoadImage ("Pic/Crow.bmp");
-
-    int xCrow = 260;
-    int yCrow = 0;
-    int vxCrow = 50;
+        Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
+        int y0Stalker = 1500;
 
     //пуля
-    Bullet  bul = {0, 0, false, 10, 0};
-     //Хата
-     Barrier bar[1];
-     bar[0] = {1265, 25, 1200, 930, true, txLoadImage ("Pic/DOM3.bmp")};//МЕСТО НА КАРТЕ
+        Bullet  bul = {0, 0, false, 10, 0};
+    //Хата
+        Barrier bar[1];
+        bar[0] = {1265, 70, 1200, 930, true, txLoadImage ("Pic/DOM3.bmp")};
+
+    //ворона
+        Crow crow = {200, 200, 50, txLoadImage ("Pic/crow.bmp")};
 
 
-
-
-//1020, 230
-//1880, 940
-
+    //ТО ЧТО ПРОИСХОДИТ
     while (!GetAsyncKeyState (VK_ESCAPE))
     {
 
 
-          txBegin();
-          txBitBlt (txDC(), 0, 0, 1920, 946, background);
-          //рисование
-          bar[0].draw();
+    txBegin();
+        txBitBlt (txDC(), 0, 0, 1920, 946, background);
+        //рисование
+        bar[0].draw();
+        stalker.draw();
+        crow.draw();
 
-          stalker.draw();
-
-//земля
+        //земля
           stalker.y += 10;
           if(stalker.y > y0Stalker - 1200)
           {
@@ -101,7 +117,7 @@ int main()
 
 
           }
-//управление
+        //управление
           if(GetAsyncKeyState (VK_SPACE))//прыжок
           {
             stalker.y -= 25;
@@ -112,17 +128,17 @@ int main()
             stalker.image = stalker.image_sit;
           }
           if(GetAsyncKeyState ('D'))//право
-           {
+          {
              stalker.x += 20;
              stalker.image = stalker.image_right;
            }
           if(GetAsyncKeyState ('A'))//лево
-           {
+          {
              stalker.x -= 20;
              stalker.image = stalker.image_left;
            }
 
-           //пуля
+        //пуля
           if (bul.visible)
           {
            txCircle(bul.x, bul.y, 5);
@@ -147,16 +163,21 @@ int main()
 
           }
 
- //движение вороны
-           txTransparentBlt (txDC(), xCrow, yCrow, 260, 280, Crow, 0, 0, TX_WHITE);
-           xCrow = xCrow + vxCrow;
-           if(xCrow > 2000 - 1 || xCrow < 0)
-           {
-              vxCrow = - vxCrow;
 
-           }
+        //текст Севера
+          if( (stalker.x < bar[0].x + bar[0].w) &&
+              (stalker.x+500 > bar[0].x) &&
+              (stalker.y < bar[0].y+bar[0].h) &&
+              (stalker.y+600 > bar[0].y))
+     {
+       txSetColor(TX_WHITE);
+       txTextOut(250, 75, "Кто это?!?! Неужели кто-то выжил после этого нашествия мутантов? Как тебя кличут сталкер? Акробат, будем знакомы, меня Севером кличут. Прошу, убей всех мутантов, Зона тебя не забудет. ");
 
+     }
 
+     //char str[100];
+     //sprintf(str, "x= %d y= %d", stalker.x, stalker.y);
+     //txTextOut(100, 550, str);
 
 
 
@@ -171,7 +192,7 @@ int main()
 
      txDeleteDC (background);
      txDeleteDC (stalker.image);
-     txDeleteDC (Crow);
+     txDeleteDC (crow.image);
      txDeleteDC (bar[0].image);
 
     txTextCursor (false);
