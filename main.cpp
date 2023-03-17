@@ -2,6 +2,11 @@
 
 #include "TXLib.h"
 
+struct Background
+{
+
+};
+
 struct Stalkers
 {
    int x;
@@ -84,18 +89,21 @@ int main()
     //фон
         HDC  background = txLoadImage ("Pic/Derevna.bmp");
     //сталкер
-        Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp")};
+        Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp"), 20};
         int y0Stalker = 1500;
-
     //пуля
         Bullet  bul = {0, 0, false, 10, 0};
     //Хата
         Barrier bar[1];
-        bar[0] = {1265, 70, 1200, 930, true, txLoadImage ("Pic/DOM3.bmp")};
-
+        bar[0] = {1265, 70, 1200, 930, true, txLoadImage ("Pic/DOM4.bmp")};
     //ворона
-        Crow crow = {200, 200, 50, txLoadImage ("Pic/crow.bmp")};
+        Crow crow = {200, 25, 50, txLoadImage ("Pic/crow.bmp")};
 
+    //переход на другую локацию
+       if(txGetPixel(stalker.x, stalker.y) == RGB(195, 195, 195));
+       {
+        //fon = txLoadImage ("Pic/Svalka.bmp");
+       }
 
     //ТО ЧТО ПРОИСХОДИТ
     while (!GetAsyncKeyState (VK_ESCAPE))
@@ -104,6 +112,7 @@ int main()
 
     txBegin();
         txBitBlt (txDC(), 0, 0, 1920, 946, background);
+
         //рисование
         bar[0].draw();
         stalker.draw();
@@ -129,14 +138,18 @@ int main()
           }
           if(GetAsyncKeyState ('D'))//право
           {
-             stalker.x += 20;
+             stalker.x += stalker.vx;
              stalker.image = stalker.image_right;
            }
           if(GetAsyncKeyState ('A'))//лево
           {
-             stalker.x -= 20;
+             stalker.x -= stalker.vx;
              stalker.image = stalker.image_left;
            }
+          if(GetAsyncKeyState (VK_SHIFT))//бег
+          {
+           stalker.vx = 100;
+          }
 
         //пуля
           if (bul.visible)
@@ -163,7 +176,6 @@ int main()
 
           }
 
-
         //текст Севера
           if( (stalker.x < bar[0].x + bar[0].w) &&
               (stalker.x+500 > bar[0].x) &&
@@ -171,10 +183,14 @@ int main()
               (stalker.y+600 > bar[0].y))
      {
        txSetColor(TX_WHITE);
-       txTextOut(250, 75, "Кто это?!?! Неужели кто-то выжил после этого нашествия мутантов? Как тебя кличут сталкер? Акробат, будем знакомы, меня Севером кличут. Прошу, убей всех мутантов, Зона тебя не забудет. ");
+       txTextOut(250, 75, "Кто это?!?! Неужели кто-то выжил после этого нашествия мутантов? Как тебя кличут сталкер? Акробат, будем знакомы, меня Севером кличут. Прошу, убей всех мутантов, выход из деревни за моим домом. ");
 
      }
 
+
+
+
+     //местоположение на оси X
      //char str[100];
      //sprintf(str, "x= %d y= %d", stalker.x, stalker.y);
      //txTextOut(100, 550, str);
