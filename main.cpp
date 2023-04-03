@@ -93,17 +93,49 @@ void draw()
   COLORREF color;
   COLORREF fill_color;
 
-  void draw()
-  {
-  txSetColor(TX_WHITE);
-           txSetFillColor(TX_WHITE);
-           txRectangle(x, y, x+w, y+h);
-           txSetColor(TX_WHITE);
-           txDrawText(x, y, x+w, y+h, text);
-  }
+    void draw()
+    {
+        txSetColor(TX_BLACK);
+        txSetFillColor(TX_WHITE);
+        txRectangle(x, y, x+w, y+h);
+        txDrawText(x, y, x+w, y+h, text);
+    }
 
+    void change()
+    {
+        txSetColor(TX_WHITE);
+        txSetFillColor(TX_BLACK);
+        txRectangle(x, y, x+w, y+h);
+        txDrawText(x, y, x+w, y+h, text);
+    }
 
+    bool mouse_over()
+    {
+        if(txMouseX()>x && txMouseX()<x+w && txMouseY()>y && txMouseY()<y+h)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool mouse_click()
+    {
+        if( txMouseButtons() == 1 && txMouseX() > x && txMouseX() < x+w && txMouseY() > y && txMouseY() < y+h)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
  };
+
+
+
 //ЗАКУЛИСЬЕ
 int main()
 {
@@ -131,38 +163,65 @@ int main()
     //ворона
         Crow crow = {200, 25, 50, txLoadImage ("Pic/crow.bmp")};
     //Меню
-        Button btn = {800, 600, 800, 600, "клуб савана"};
+        Button btn = {710, 550, 500, 50, "Новая игра"};
+        Button btn_about = {710, 650, 500, 50, "Опции"};
+        Button btn_exit = {710, 750, 500, 50, "Выход в Виндоус"};
         string PAGE = "menu";
 
 
     //ТО ЧТО ПРОИСХОДИТ
     while (!GetAsyncKeyState (VK_ESCAPE))
     {
+        txSetColor (TX_BLACK);
+        txSetFillColor (TX_BLACK);
+        txClear();
+        txBegin();
+
       if(PAGE == "menu")
       {
-       txBegin();
-       menu.draw();
-       txEnd();
-       txSleep(2);
-           btn.draw();
+        //меню
+        menu.draw();
+        //переход к игре
+        btn.draw();
 
-       if(txMouseX() > 50 && txMouseX() < 200 &&
-          txMouseY() > 50 && txMouseY() < 100)
+        if(btn.mouse_over())
+        {
+            btn.change();
+        }
+
+        if(btn.mouse_click())
+        {
+            PAGE = "game";
+        }
+
+       //Пособие
+       btn_about.draw();
+
+       if(btn.mouse_over())
        {
-           txSetColor(TX_WHITE);
-           txSetFillColor(TX_BLACK);
-           txRectangle(800, 600, 800, 600);
-           txSetColor(TX_WHITE);
-           txDrawText(490, 300, 550, 550, " клуб Савана");
+           btn.change();
        }
-       if( txMouseButtons() == 1 &&
-               txMouseX() > 50 && txMouseX() < 200 &&
-               txMouseY() > 50 && txMouseY() < 100)
-           {
-             PAGE = "game";
-           }
 
-      }
+       if(btn.mouse_click())
+       {
+         PAGE = "Settings";
+       }
+
+
+       //выход
+       btn_exit.draw();
+
+       if(btn.mouse_over())
+       {
+           btn.change();
+       }
+
+       if(btn.mouse_click())
+       {
+         PAGE = "Exit";
+       }
+
+       }
       if(PAGE == "game")
        {
 
@@ -263,10 +322,10 @@ int main()
 
 
 
-                }
+        }
+        txEnd();
+        txSleep(10);
 
-         txSetColor (TX_BLACK);
-         txSetFillColor (TX_BLACK);
 
 
     }
