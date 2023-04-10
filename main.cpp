@@ -24,10 +24,11 @@ struct Stalkers
     HDC image_sit;
     int vx;
     int vy;
+    bool visible;
 
 void draw()
    {
-   txTransparentBlt (txDC(), x, y, 499, 600, image, 0, 0, TX_WHITE);
+    if(visible) txTransparentBlt (txDC(), x, y, 499, 600, image, 0, 0, TX_WHITE);
    }
 };
 
@@ -134,6 +135,19 @@ void draw()
     }
  };
 
+ struct Enemy
+ {
+  int x;
+  int y;
+  int vx;
+  bool visible;
+  HDC image;
+
+  void draw()
+  {
+    if(visible) txTransparentBlt (txDC(), x, y, 450, 400, image, 0, 0, TX_WHITE);
+  }
+ };
 
 
 //ЗАКУЛИСЬЕ
@@ -153,15 +167,19 @@ int main()
 
         Background menu = {0, 0, fon_menu};
     //сталкер
-        Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp"), 20};
+        Stalkers stalker = {100, 600, txLoadImage ("Pic/Stalker.bmp"), txLoadImage ("Pic/Stalkerleft.bmp"), txLoadImage ("Pic/Stalkerright.bmp"), txLoadImage ("Pic/Stalkersit.bmp"), 20, 0, true};
         int y0Stalker = 1500;
     //пуля
         Bullet  bul = {0, 0, false, 10, 0};
+        int napr = 1;
     //Хата
         Barrier bar[1];
         bar[0] = {1265, 70, 1200, 930, true, txLoadImage ("Pic/DOM4.bmp")};
     //ворона
         Crow crow = {200, 25, 50, txLoadImage ("Pic/crow.bmp")};
+    //враги
+        Enemy dog = {1600, 500, 20, false, txLoadImage ("Pic/Dog.bmp")};
+
     //Меню
         Button btn = {710, 550, 500, 50, "Новая игра"};
         Button btn_about = {710, 650, 500, 50, "Опции"};
@@ -197,12 +215,12 @@ int main()
        //Пособие
        btn_about.draw();
 
-       if(btn.mouse_over())
+       if(btn_about.mouse_over())
        {
-           btn.change();
+           btn_about.change();
        }
 
-       if(btn.mouse_click())
+       if(btn_about.mouse_click())
        {
          PAGE = "Settings";
        }
@@ -211,12 +229,12 @@ int main()
        //выход
        btn_exit.draw();
 
-       if(btn.mouse_over())
+       if(btn_exit.mouse_over())
        {
-           btn.change();
+           btn_exit.change();
        }
 
-       if(btn.mouse_click())
+       if(btn_exit.mouse_click())
        {
          PAGE = "Exit";
        }
@@ -225,14 +243,14 @@ int main()
       if(PAGE == "game")
        {
 
-
             //рисование
             fon.draw();
             if(fon.image == fon_image1)
                 bar[0].draw();
             stalker.draw();
             crow.draw();
-
+            if(fon.image == fon_image2)
+                dog.draw();
 
             //земля
               stalker.y += 10;
@@ -270,24 +288,27 @@ int main()
             //пуля
               if (bul.visible)
               {
-               txCircle(bul.x, bul.y, 5);
-               bul.x = bul.x + bul.vx;
+                   txCircle(bul.x, bul.y, 5);
+                   bul.x += bul.vx;
+
+                  if(napr == 1) bul.vx=bul.vx;
+                  if(napr == 0) bul.vx=-bul.vx;
               }
               if(GetAsyncKeyState ('G'))
               {
-               bul.x = stalker.x+475;
-               bul.y = stalker.y+305;
+                   bul.x = stalker.x+475;
+                   bul.y = stalker.y+305;
+                   bul.visible = true;
+                   if (stalker.image == stalker.image_right)
+                    {
+                        napr = 1;
+                    }
+                    else if (stalker.image == stalker.image_left)
+                    {
+                        napr = 0;
+                    }
               }
-              if (stalker.image == stalker.image_right)
-              {
-                bul.vx=bul.vx;
-               }
-              else if (stalker.image == stalker.image_left)
-              {
-                bul.vx=-bul.vx;
 
-               }
-               bul.visible = true;
 
 
 
@@ -309,15 +330,18 @@ int main()
                {
                     fon.image = fon_image2;
                     stalker.x = 500;
+                    dog.visible = true;
                }
+            //Противник
+            if(dog.visible && dog.x > stalker.x) dog.x -= dog.vx;
+            if(dog.visible && dog.x < stalker.x) dog.x += dog.vx;
 
-
-
-
+            if (dog.visible && dog.x < stalker.x+499) stalker.visible = false;
+            if (bul.x > dog.visible && dog.x) dog.visible = false;
          //местоположение на оси X
          //char str[100];
          //sprintf(str, "x= %d y= %d", stalker.x, stalker.y);
-         //txTextOut(100, 550, str);
+         //txTextOut(500, 550, str);
 
 
 
