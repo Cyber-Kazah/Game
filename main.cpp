@@ -139,14 +139,20 @@ void draw()
  {
   int x;
   int y;
+  int w;
+  int h;
   int vx;
   bool visible;
   HDC image;
 
   void draw()
   {
-    if(visible) txTransparentBlt (txDC(), x, y, 450, 400, image, 0, 0, TX_WHITE);
+    if(visible) txTransparentBlt (txDC(), x, y, w, h, image, 0, 0, TX_WHITE);
   }
+
+
+
+
  };
 
 
@@ -161,6 +167,7 @@ int main()
     //фон
         HDC fon_image1 = txLoadImage ("Pic/Derevna2.bmp");
         HDC fon_image2 = txLoadImage ("Pic/Svalka.bmp");
+        HDC fon_image3 = txLoadImage ("Pic/svalka2.bmp");
         HDC fon_menu = txLoadImage ("Pic/Menu.bmp");
 
         Background fon = {0, 0, fon_image1};
@@ -178,8 +185,8 @@ int main()
     //ворона
         Crow crow = {200, 25, 50, txLoadImage ("Pic/crow.bmp")};
     //враги
-        Enemy dog = {1600, 500, 20, false, txLoadImage ("Pic/Dog.bmp")};
-
+        Enemy dog = {1600, 500, 450, 400, 20, false, txLoadImage ("Pic/Dog.bmp")};
+        Enemy psidog = {1600, 500, 650, 400, 25, false, txLoadImage ("Pic/Psevdopes.bmp")};
     //Меню
         Button btn = {710, 550, 500, 50, "Новая игра"};
         Button btn_about = {710, 650, 500, 50, "Опции"};
@@ -236,10 +243,19 @@ int main()
 
        if(btn_exit.mouse_click())
        {
-         PAGE = "Exit";
+         break;
        }
 
        }
+      if(PAGE == "Settings")
+      {
+       txTextOut (1000, 350, "Здесь могла бы быть Ваша реклама.");
+
+
+      }
+
+
+
       if(PAGE == "game")
        {
 
@@ -251,6 +267,9 @@ int main()
             crow.draw();
             if(fon.image == fon_image2)
                 dog.draw();
+                psidog.draw();
+
+
 
             //земля
               stalker.y += 10;
@@ -326,18 +345,50 @@ int main()
 
          }
             //переход на другую локацию
-              if(stalker.x > 1500)
+              if(stalker.x > 1500 && fon.image == fon_image1)
                {
                     fon.image = fon_image2;
                     stalker.x = 500;
                     dog.visible = true;
                }
-            //Противник
+              if(stalker.x > 1400 && fon.image == fon_image2)
+               {
+                    fon.image = fon_image3;
+                    stalker.x = 450;
+                    psidog.visible = true;
+
+               }
+
+
+
+
+
+
+
+
+            //Противники
+            {
+            //собака
             if(dog.visible && dog.x > stalker.x) dog.x -= dog.vx;
             if(dog.visible && dog.x < stalker.x) dog.x += dog.vx;
 
             if (dog.visible && dog.x < stalker.x+499) stalker.visible = false;
-            if (bul.x > dog.visible && dog.x) dog.visible = false;
+            if (bul.x > dog.x && dog.visible) dog.visible = false;
+
+
+            //собака страшная
+            if(psidog.visible && psidog.x > stalker.x) psidog.x -= psidog.vx;
+            if(dog.visible && dog.x < stalker.x) dog.x += dog.vx;
+
+            if (psidog.visible && psidog.x < stalker.x+499) stalker.visible = false;
+            if (bul.x > psidog.x && psidog.visible) psidog.visible = false;
+
+
+
+
+
+
+            }
          //местоположение на оси X
          //char str[100];
          //sprintf(str, "x= %d y= %d", stalker.x, stalker.y);
@@ -360,6 +411,7 @@ int main()
      txDeleteDC (bar[0].image);
 
     txTextCursor (false);
+    txDisableAutoPause();
     return 0;
     }
 
