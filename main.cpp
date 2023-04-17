@@ -168,6 +168,9 @@ int main()
         HDC fon_image1 = txLoadImage ("Pic/Derevna2.bmp");
         HDC fon_image2 = txLoadImage ("Pic/Svalka.bmp");
         HDC fon_image3 = txLoadImage ("Pic/svalka2.bmp");
+        HDC fon_image4 = txLoadImage ("Pic/Bar.bmp");
+        HDC fon_image5 = txLoadImage ("Pic/Agroprom.bmp");
+        HDC fon_image6 = txLoadImage ("Pic/spusk.bmp");
         HDC fon_menu = txLoadImage ("Pic/Menu.bmp");
 
         Background fon = {0, 0, fon_image1};
@@ -187,6 +190,8 @@ int main()
     //враги
         Enemy dog = {1600, 500, 450, 400, 20, false, txLoadImage ("Pic/Dog.bmp")};
         Enemy psidog = {1600, 500, 650, 400, 25, false, txLoadImage ("Pic/Psevdopes.bmp")};
+        Enemy pig = {1600, 400, 800, 500, 30, false, txLoadImage ("Pic/kaban3.bmp")};
+        Enemy snork = {1600, 500, 730, 450, 40, false, txLoadImage ("Pic/Snork.bmp")};
     //Меню
         Button btn = {710, 550, 500, 50, "Новая игра"};
         Button btn_about = {710, 650, 500, 50, "Опции"};
@@ -249,12 +254,10 @@ int main()
        }
       if(PAGE == "Settings")
       {
-       txTextOut (1000, 350, "Здесь могла бы быть Ваша реклама.");
+       txTextOut (900, 400, "ААААААААААААААААААААААААААААААААААААААААААААААААААААААА.");
 
 
       }
-
-
 
       if(PAGE == "game")
        {
@@ -267,9 +270,10 @@ int main()
             crow.draw();
             if(fon.image == fon_image2)
                 dog.draw();
+            if(fon.image == fon_image3)
                 psidog.draw();
-
-
+                pig.draw();
+                snork.draw();
 
             //земля
               stalker.y += 10;
@@ -301,7 +305,7 @@ int main()
                }
               if(GetAsyncKeyState (VK_SHIFT))//бег
               {
-               stalker.vx = 1000;
+               stalker.vx = 30;
               }
 
             //пуля
@@ -331,8 +335,8 @@ int main()
 
 
 
-
-
+            //Тексты
+            {
             //текст Севера
             if(fon.image == fon_image1)
               if( (stalker.x < bar[0].x + bar[0].w) &&
@@ -344,6 +348,29 @@ int main()
            txTextOut(250, 75, "Кто это?!?! Неужели кто-то выжил после этого нашествия мутантов? Как тебя кличут сталкер? Акробат, будем знакомы, меня Севером кличут. Прошу, убей всех мутантов, выход из деревни за моим домом. ");
 
          }
+            //текст главного героя
+            if(fon.image == fon_image4)
+            {
+            txSetColor(TX_YELLOW);
+            txTextOut(250, 75, "Даже в баре 100 Рентген никого, Что же вызвало это нашествие? надо идти на Агропром, может там найдутся выжившие.");
+
+
+
+
+            }
+            //текст глвного героя(агропром)
+            if(fon.image == fon_image4)
+            {
+
+            }
+
+
+
+
+
+            }
+
+
             //переход на другую локацию
               if(stalker.x > 1500 && fon.image == fon_image1)
                {
@@ -358,12 +385,30 @@ int main()
                     psidog.visible = true;
 
                }
+              if(stalker.x > 1400 && fon.image == fon_image3)
+               {
+
+                    fon.image = fon_image4;
+                    stalker.x = 350;
+                    pig.visible = true;
 
 
+               }
+              if(stalker.x > 1400 && fon.image == fon_image4)
+               {
+                    fon.image = fon_image5;
+                    stalker.x = 250;
+                    snork.visible = true;
 
 
+               }
+              if(stalker.x > 1400 && fon.image == fon_image5)
+               {
+                    fon.image = fon_image6;
+                    stalker.x = 250;
+                    snork.visible = true;
 
-
+               }
 
 
             //Противники
@@ -373,15 +418,47 @@ int main()
             if(dog.visible && dog.x < stalker.x) dog.x += dog.vx;
 
             if (dog.visible && dog.x < stalker.x+499) stalker.visible = false;
-            if (bul.x > dog.x && dog.visible) dog.visible = false;
-
+            if (bul.x > dog.x && dog.visible)
+                {
+                    dog.visible = false;
+                    bul.visible = false;
+                }
 
             //собака страшная
             if(psidog.visible && psidog.x > stalker.x) psidog.x -= psidog.vx;
             if(dog.visible && dog.x < stalker.x) dog.x += dog.vx;
 
             if (psidog.visible && psidog.x < stalker.x+499) stalker.visible = false;
-            if (bul.x > psidog.x && psidog.visible) psidog.visible = false;
+            if (bul.x > psidog.x && psidog.visible)
+               {
+                    psidog.visible = false;
+                    bul.visible = false;
+               }
+
+            //кабан
+            if(pig.visible && pig.x > stalker.x) pig.x -= pig.vx;
+            if(pig.visible && pig.x < stalker.x) pig.x += pig.vx;
+
+            if (pig.visible && pig.x < stalker.x+499) stalker.visible = false;
+            if (bul.x > pig.x && pig.visible)
+               {
+                    pig.visible = false;
+                    bul.visible = false;
+               }
+
+            //снорк
+            if(snork.visible && snork.x > stalker.x) snork.x -= snork.vx;
+            if(snork.visible && snork.x < stalker.x) snork.x += snork.vx;
+
+            if (snork.visible && snork.x < stalker.x+499) stalker.visible = false;
+            if (bul.x > snork.x && snork.visible)
+               {
+                    snork.visible = false;
+                    bul.visible = false;
+               }
+
+
+
 
 
 
@@ -389,6 +466,8 @@ int main()
 
 
             }
+
+
          //местоположение на оси X
          //char str[100];
          //sprintf(str, "x= %d y= %d", stalker.x, stalker.y);
@@ -409,6 +488,10 @@ int main()
      txDeleteDC (stalker.image);
      txDeleteDC (crow.image);
      txDeleteDC (bar[0].image);
+     txDeleteDC (dog.image);
+     txDeleteDC (psidog.image);
+     txDeleteDC (pig.image);
+     txDeleteDC (snork.image);
 
     txTextCursor (false);
     txDisableAutoPause();
