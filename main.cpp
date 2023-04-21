@@ -2,6 +2,9 @@
 
 #include "TXLib.h"
 
+
+//ОШИБКИ!
+
 struct Background
 {
     int x;
@@ -71,16 +74,25 @@ void draw()
     int x;
     int y;
     int vx;
+    bool visible;
+    HDC image_right;
+    HDC image_left;
     HDC image;
 
 void draw()
    {
-   txTransparentBlt (txDC(), x, y, 260, 280, image, 0, 0, TX_WHITE);
-   x = x + vx;
-    if(x > 2000 - 1 || x < 0)
-        {
+    if(x < 0)
+    {
          vx = - vx;
-        }
+         image = image_right;
+    }
+    if(x > 2000 - 1)
+    {
+        vx = - vx;
+        image = image_left;
+    }
+    txTransparentBlt (txDC(), x, y, 260, 280, image, 0, 0, TX_WHITE);
+    x = x + vx;
    }
  };
 
@@ -161,7 +173,12 @@ int main()
 {
     {//МУЗЫКА
     if(true)
-    txPlaySound ("Muz/Dirge for the planet.wav", SND_LOOP);
+   {
+    txPlaySound ("Muz/Zone Triggers.wav", SND_LOOP);
+   }
+
+
+
     }
     txCreateWindow (1920, 946);
     //фон
@@ -171,6 +188,8 @@ int main()
         HDC fon_image4 = txLoadImage ("Pic/Bar.bmp");
         HDC fon_image5 = txLoadImage ("Pic/Agroprom.bmp");
         HDC fon_image6 = txLoadImage ("Pic/spusk.bmp");
+        HDC fon_image7 = txLoadImage ("Pic/podzem.bmp");
+        HDC fon_dead = txLoadImage ("Pic/dead.bmp");
         HDC fon_menu = txLoadImage ("Pic/Menu.bmp");
 
         Background fon = {0, 0, fon_image1};
@@ -186,7 +205,7 @@ int main()
         Barrier bar[1];
         bar[0] = {1265, 70, 1200, 930, true, txLoadImage ("Pic/DOM4.bmp")};
     //ворона
-        Crow crow = {200, 25, 50, txLoadImage ("Pic/crow.bmp")};
+        Crow crow = {200, 25, 50, true, txLoadImage ("Pic/crow_right.bmp"), txLoadImage ("Pic/crow_left.bmp"), crow.image_right};
     //враги
         Enemy dog = {1600, 500, 450, 400, 20, false, txLoadImage ("Pic/Dog.bmp")};
         Enemy psidog = {1600, 500, 650, 400, 25, false, txLoadImage ("Pic/Psevdopes.bmp")};
@@ -200,13 +219,16 @@ int main()
 
 
     //ТО ЧТО ПРОИСХОДИТ
-    while (!GetAsyncKeyState (VK_ESCAPE))
+    while (true)
     {
         txSetColor (TX_BLACK);
         txSetFillColor (TX_BLACK);
         txClear();
         txBegin();
-
+      if(GetAsyncKeyState (VK_ESCAPE))
+      {
+        PAGE = "menu";
+      }
       if(PAGE == "menu")
       {
         //меню
@@ -254,11 +276,23 @@ int main()
        }
       if(PAGE == "Settings")
       {
-       txTextOut (900, 400, "ААААААААААААААААААААААААААААААААААААААААААААААААААААААА.");
+        txSetColor(TX_WHITE);
+       txDrawText (250, 75, 1700, 700, "Вы сталкер по кличке Акробат, вы утаиваете происхождение своей клички и попали в зону в самый неподходящий момент. \n"
+                            "В зоне произошёл мощьнейший выброс, после которого произошло нашестивие мутантов, которые добили остатки группировок, \n"
+                            "Сейчас вашей главной задачей является поиск виновных в этом, \n"
+                            "        УПРАВЛЕНИЕ         \n"
+                            "Вправо - D \n"
+                            "Влево - A \n"
+                            "Присесть - S \n"
+                            "Прыжок - Пробел \n"
+                            "Выстрел - G \n"
+                            "Выход в меню - ESC \n");
 
 
-      }
 
+
+
+       }
       if(PAGE == "game")
        {
 
@@ -267,7 +301,7 @@ int main()
             if(fon.image == fon_image1)
                 bar[0].draw();
             stalker.draw();
-            crow.draw();
+            if(crow.visible) crow.draw();
             if(fon.image == fon_image2)
                 dog.draw();
             if(fon.image == fon_image3)
@@ -359,11 +393,18 @@ int main()
 
             }
             //текст глвного героя(агропром)
-            if(fon.image == fon_image4)
+            if(fon.image == fon_image6)
             {
+                txSetColor(TX_YELLOW);
+                txTextOut(250, 75, "Так, а вот и спуск в Подземелья, возможно там будут выжившие.");
+            }
+            //текст главного героя(подземелья)
+            if(fon.image == fon_image7)
+            {
+                txSetColor(TX_YELLOW);
+                txTextOut(250, 75, "Надо быть начеку, эти подземелья окутаны страхом и тайнами.");
 
             }
-
 
 
 
@@ -409,7 +450,14 @@ int main()
                     snork.visible = true;
 
                }
+              if(stalker.x > 1000 && fon.image == fon_image6)
+                {
+                    fon.image = fon_image7;
+                    stalker.x = 1500;
+                    crow.visible = false;
 
+
+                }
 
             //Противники
             {
@@ -467,6 +515,18 @@ int main()
 
             }
 
+
+
+
+
+
+            //Экран
+            if(stalker.visible == false)
+            {
+             fon.image = fon_dead;
+
+
+            }
 
          //местоположение на оси X
          //char str[100];
